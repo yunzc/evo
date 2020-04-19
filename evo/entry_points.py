@@ -43,6 +43,13 @@ def ape():
     launch(main_ape, parser)
 
 
+def multi_ape():
+    from evo import main_multi_ape
+    parser = main_multi_ape.parser()
+    argcomplete.autocomplete(parser)
+    launch(main_multi_ape, parser)
+
+
 def rpe():
     from evo import main_rpe
     parser = main_rpe.parser()

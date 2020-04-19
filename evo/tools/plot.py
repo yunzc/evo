@@ -402,6 +402,52 @@ def traj_colormap(ax, traj, array, plot_mode, min_map, max_map, title=""):
         ax.legend(frameon=True)
         plt.title(title)
 
+def traj_colormap_multi(ax, traj_list, array_list, plot_mode, min_map, max_map, title=""):
+    """
+    color map a path/trajectory in xyz coordinates according to
+    an array of values
+    :param ax: plot axis
+    :param traj: list of trajectory.PosePath3D or trajectory.PoseTrajectory3D object
+    :param array: list of Nx1 array of values used for color mapping
+    :param plot_mode: PlotMode
+    :param min_map: lower bound value for color mapping
+    :param max_map: upper bound value for color mapping
+    :param title: plot title
+    """
+    pos = np.zeros(shape=(0, 3))
+    for i in range(len(traj_list)):
+        pos = np.concatenate((pos, traj_list[i].positions_xyz))
+    array = np.array([])
+    for i in range(len(array_list)):
+        array = np.concatenate((array, array_list[i]))
+
+    norm = mpl.colors.Normalize(vmin=min_map, vmax=max_map, clip=True)
+    mapper = cm.ScalarMappable(
+        norm=norm,
+        cmap=SETTINGS.plot_trajectory_cmap)  # cm.*_r is reversed cmap
+    mapper.set_array(array)
+    colors = [mapper.to_rgba(a) for a in array]
+    line_collection = colored_line_collection(pos, colors, plot_mode)
+    ax.add_collection(line_collection)
+    ax.autoscale_view(True, True, True)
+    if plot_mode == PlotMode.xyz:
+        ax.set_zlim(
+            np.amin(pos[:, 2]),
+            np.amax(pos[:, 2]))
+        if SETTINGS.plot_xyz_realistic:
+            set_aspect_equal_3d(ax)
+    fig = plt.gcf()
+    cbar = fig.colorbar(
+        mapper, ticks=[min_map, (max_map - (max_map - min_map) / 2), max_map])
+    cbar.ax.set_yticklabels([
+        "{0:0.3f}".format(min_map),
+        "{0:0.3f}".format(max_map - (max_map - min_map) / 2),
+        "{0:0.3f}".format(max_map)
+    ])
+    if title:
+        ax.legend(frameon=True)
+        plt.title(title)
+
 
 def draw_coordinate_axes(ax, traj, plot_mode, marker_scale=0.1, x_color="r",
                          y_color="g", z_color="b"):

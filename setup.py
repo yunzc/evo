@@ -83,6 +83,7 @@ setup(
     package_data={"evo": ["version", "LICENSE"]},
     entry_points={"console_scripts": [
         "evo_ape=evo.entry_points:ape",
+        "evo_multi_ape=evo.entry_points:multi_ape",
         "evo_rpe=evo.entry_points:rpe",
         "evo_traj=evo.entry_points:traj",
         "evo_res=evo.entry_points:res",
